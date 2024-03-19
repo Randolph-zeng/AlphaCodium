@@ -316,7 +316,8 @@ def eval_solution(evaluation_test_type: str = "private_tests",
                   test_inputs: Optional[List[str]] = None,
                   test_outputs: Optional[List[str]] = None,
                   silent=False,
-                  break_on_timeout=False):
+                  break_on_timeout=False,
+                  timeout=3):
     if not test_inputs:
         test_inputs = example.get(evaluation_test_type).get("input") if example.get(evaluation_test_type) else None
     if not test_outputs:
@@ -335,7 +336,7 @@ def eval_solution(evaluation_test_type: str = "private_tests",
             candidate=prediction,
             test_inputs=test_inputs,
             tests_outputs=test_outputs,
-            timeout=3,
+            timeout=timeout,
             break_on_timeout = break_on_timeout,
         )
         if not silent:

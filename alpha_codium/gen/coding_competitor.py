@@ -41,16 +41,20 @@ class CodeContestsCompetitor:
             frequency_penalty = self.prompt[prompt].frequency_penalty
         else:
             frequency_penalty = None
-        return sys_prompt, usr_prompt, temperature, frequency_penalty
+        if hasattr(self.prompt[prompt], 'top_p'):
+            top_p = self.prompt[prompt].top_p
+        else:
+            top_p = 0.9
+        return sys_prompt, usr_prompt, temperature, frequency_penalty, top_p
 
     async def _run(self, model, problem, prompt:str = "code_contests_prompt_reflect"):
-        system_prompt, user_prompt, temperature, frequency_penalty = self.render(problem, prompt)
+        system_prompt, user_prompt, temperature, frequency_penalty, top_p = self.render(problem, prompt)
 
         if frequency_penalty == None:
             frequency_penalty = get_settings().get("config.frequency_penalty")
 
         response, finish_reason = await self.ai_handler.chat_completion(
-            model=model, system=system_prompt, user=user_prompt,
+            model=model, system=system_prompt, user=user_prompt, top_p=top_p,
             temperature=temperature, frequency_penalty=frequency_penalty,
         )
         return response, finish_reason
@@ -169,21 +173,24 @@ def solve_my_problem(problem):
     logger.info(f"testing solution on private tests with prediction:\n{solution}")
 
     logger.info(f"evaluating solution on public tests...")
+    sol_eval_timeout = get_settings().get('config.sol_eval_timeout')
     test_results, test_passed_public, test_failed_public, test_timeout_public = evaluate_solution_on_subset('public_tests',
                                                                                                        problem,
                                                                                                        solution,
-                                                                                                       silent=True)
+                                                                                                       silent=True,
+                                                                                                       timeout=sol_eval_timeout)
 
 
     logger.info(f"evaluating solution on private tests...")
     test_results, test_passed_private, test_failed_private, test_timeout_private = evaluate_solution_on_subset('private_tests',
                                                                                                        problem,
                                                                                                        solution,
-                                                                                                       silent=True)
+                                                                                                       silent=True,
+                                                                                                       timeout=sol_eval_timeout)
 
     logger.info(f"evaluating solution on generated tests...")
     test_results, test_passed_generate, test_failed_generate, test_timeout_generate = evaluate_solution_on_subset(
-        'generated_tests', problem, solution, silent=True)
+        'generated_tests', problem, solution, silent=True, timeout=sol_eval_timeout)
 
     logger.info(f"\ntest_passed_generate: {test_passed_generate}, test_passed_private: {test_passed_private}, test_passed_public: {test_passed_public}"
                 f"\ntest_failed_generate: {test_failed_generate}, test_failed_private: {test_failed_private}, test_failed_public: {test_failed_public}"

@@ -45,12 +45,12 @@ def postprocess_response(response):
     return response
 
 
-def evaluate_solution_on_subset(evaluation_test_type, problem, solution, silent=False, break_on_timeout=True):
+def evaluate_solution_on_subset(evaluation_test_type, problem, solution, silent=False, break_on_timeout=True, timeout=3):
     # evaluate solution
     test_results = None
     if evaluation_test_type:
         test_results = eval_solution(evaluation_test_type=evaluation_test_type, example=problem, prediction=solution,
-                                     silent=silent, break_on_timeout=break_on_timeout)
+                                     silent=silent, break_on_timeout=break_on_timeout, timeout=timeout)
 
     if test_results[1] == []:
         if not silent:
@@ -145,4 +145,4 @@ def try_fix_yaml(response_text: str, keys_fix_yaml: List[str] = []) -> dict:
         get_logger().info(f"Successfully parsed AI prediction after adding |-\n")
         return data
     except:
-        raise "yaml parsing error"
+        raise Exception("yaml parsing error")

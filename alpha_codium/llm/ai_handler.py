@@ -72,6 +72,7 @@ class AiHandler:
             system: str,
             user: str,
             temperature: float = 0.2,
+            top_p: float= 0.9,
             frequency_penalty: float = 0.0,
     ):
         try:
@@ -99,6 +100,7 @@ class AiHandler:
                         repetition_penalty=frequency_penalty+1, # the scale of TGI is different from OpenAI
                         force_timeout=get_settings().config.ai_timeout,
                         max_tokens=2000,
+                        top_p=top_p,
                         stop=['<|EOT|>'],
                     )
                     response["choices"][0]["message"]["content"] = response["choices"][0]["message"]["content"].rstrip()
