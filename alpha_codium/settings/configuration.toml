@@ -9,6 +9,7 @@ fallback_models =[]
 verbosity_level=0 # 0,1,2
 private_dataset_cache_dir="~/.cache/huggingface/datasets/alpha_codium"
 max_requests_per_minute=60
+sol_eval_timeout = 30
 
 [dataset]
 evaluate_prev_solutions=false
@@ -24,7 +25,7 @@ use_direct_solutions=false
 validate_self_reflection=false
 
 [possible_solutions]
-max_num_of_possible_solutions=3
+max_num_of_possible_solutions=1
 use_test_explanations=true
 remove_bruce_force_solutions=true
 
