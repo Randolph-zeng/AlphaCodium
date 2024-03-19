@@ -1,5 +1,6 @@
 [config]
-model="gpt-4-0125-preview"
+model="openai//dataset/pretrained-models/deepseek-coder-7b-instruct-v1.5/"
+local_endpoint="localhost:10245/v1"
 #model="gpt-4-0613"
 #model = "gpt-3.5-turbo-16k"
 frequency_penalty=0.1
@@ -28,7 +29,7 @@ use_test_explanations=true
 remove_bruce_force_solutions=true
 
 [generate_ai_tests]
-validate_ai_tests=false
+validate_ai_tests=true
 number_of_ai_tests=6
 use_test_explanations=true
 add_public_tests_to_ai_tests=true
