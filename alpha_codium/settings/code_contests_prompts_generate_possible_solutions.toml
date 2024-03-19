@@ -1,5 +1,6 @@
 [code_contests_prompt_generate_possible_solutions]
-temperature = 0.3
+temperature = 0.5
+top_p = 0.9
 system= """\
 Pay attention to small details and nuances in the problem description.
 """

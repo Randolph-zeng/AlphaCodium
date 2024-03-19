@@ -1,5 +1,6 @@
 [code_contests_prompts_choose_best_solution]
-temperature = 0.2
+temperature = 0.5
+top_p = 0.9
 system = """\
 """
 
