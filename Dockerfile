@@ -35,5 +35,11 @@ RUN python3.9 --version
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
 RUN update-alternatives --set python /usr/bin/python3.9
 
+COPY requirements.txt /home/appuser/requirements.txt
+RUN python3.9 -m pip install --no-cache-dir -r /home/appuser/requirements.txt
+
+RUN useradd -m -d /home/appuser appuser
+USER appuser
+WORKDIR /home/appuser
 
 
