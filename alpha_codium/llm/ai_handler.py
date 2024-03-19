@@ -37,7 +37,7 @@ class AiHandler:
             self.azure = False
             if "deepseek" in get_settings().get("config.model"):
                 litellm.register_prompt_template(
-                    model="huggingface/deepseek-ai/deepseek-coder-33b-instruct",
+                    model=get_settings().get("config.model"),
                     roles={
                         "system": {
                             "pre_message": "",
@@ -89,12 +89,12 @@ class AiHandler:
                 logger.debug(f"user:\n{user}")
                 if "deepseek" in get_settings().get("config.model"):
                     response = await acompletion(
-                        model="huggingface/deepseek-ai/deepseek-coder-33b-instruct",
+                        model=get_settings().get("config.model"),
                         messages=[
                             {"role": "system", "content": system},
                             {"role": "user", "content": user},
                         ],
-                        api_base=get_settings().get("config.model"),
+                        api_base=get_settings().get("config.local_endpoint"),
                         temperature=temperature,
                         repetition_penalty=frequency_penalty+1, # the scale of TGI is different from OpenAI
                         force_timeout=get_settings().config.ai_timeout,
