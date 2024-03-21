@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, json
 import logging
 import os
 from jinja2 import Environment, StrictUndefined
@@ -195,5 +195,7 @@ def solve_my_problem(problem):
     logger.info(f"\ntest_passed_generate: {test_passed_generate}, test_passed_private: {test_passed_private}, test_passed_public: {test_passed_public}"
                 f"\ntest_failed_generate: {test_failed_generate}, test_failed_private: {test_failed_private}, test_failed_public: {test_failed_public}"
                 f"\ntest_timeout_generate: {test_timeout_generate}, test_timeout_private: {test_timeout_private}, test_timeout_public: {test_timeout_public}")
-
+    with open(f'/home/llm/AlphaCodium/code_contest_data/generated_problem_data/{problem["name"]}.json', 'w') as file:
+        json.dump(problem, file, indent=2, ensure_ascii=False)
+    
     return solution, test_results
