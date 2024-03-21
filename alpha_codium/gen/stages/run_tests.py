@@ -8,14 +8,15 @@ from alpha_codium.log import get_logger
 logger = get_logger(__name__)
 
 
-def run_tests(self, problem, counter, test_inputs, test_outputs):
+def run_tests(self, problem, counter, test_inputs, test_outputs, timeout=3):
     try:
         # run the solution on the public tests
         logging.info(f"evaluating public tests. attempt {counter}")
         test_inputs, results = eval_solution(example=problem,
                                              prediction=problem['code_recent_solution'],
                                              test_inputs=test_inputs,
-                                             test_outputs=test_outputs, )
+                                             test_outputs=test_outputs,
+                                             timeout=timeout)
 
         # analyze the tests results
         error_str = trace_str = ""

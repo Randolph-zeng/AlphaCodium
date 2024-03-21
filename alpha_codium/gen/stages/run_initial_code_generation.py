@@ -26,8 +26,9 @@ async def run_initial_code_generation(self, problem):
             problem = await run_initial_solve(self, problem)
 
             # run the solution on the selected tests
+            sol_eval_timeout = get_settings().get('config.sol_eval_timeout')
             problem, passed_tests, non_empty_output, error_str, trace_str, tests_timeout, d_tot \
-                = run_tests(self, problem, counter, test_input, test_output)
+                = run_tests(self, problem, counter, test_input, test_output, timeout=sol_eval_timeout)
 
             best_solution = copy.deepcopy(problem['code_recent_solution'])
             best_d = float('inf') # distance to the correct solution

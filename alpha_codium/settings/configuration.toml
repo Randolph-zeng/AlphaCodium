@@ -1,9 +1,6 @@
 [config]
-#model="openai//dataset/pretrained-models/deepseek-coder-7b-instruct-v1.5/"
 model="openai//dataset/pretrained-models/deepseek-coder-33b-instruct/"
 local_endpoint="http://0.0.0.0:10245/v1"
-#model="gpt-4-0613"
-#model = "gpt-3.5-turbo-16k"
 frequency_penalty=0.1
 ai_timeout=90 # seconds
 fallback_models =[]
@@ -11,6 +8,9 @@ verbosity_level=0 # 0,1,2
 private_dataset_cache_dir="~/.cache/huggingface/datasets/alpha_codium"
 max_requests_per_minute=60
 sol_eval_timeout = 30
+#model="gpt-4-0613"
+#model = "gpt-3.5-turbo-16k"
+#model="openai//dataset/pretrained-models/deepseek-coder-7b-instruct-v1.5/"
 
 [dataset]
 evaluate_prev_solutions=false
@@ -20,7 +20,7 @@ use_iteration_scheme=true
 [solve]
 reduce_verbose = false
 use_baseline = false
-use_direct_solutions=false
+use_direct_solutions= false
 
 [self_reflection]
 validate_self_reflection=false

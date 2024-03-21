@@ -42,7 +42,8 @@ async def run_evaluate_all_ai_tests(self, problem):
                     if i < len(ai_tests) - len(problem['public_tests']['input']):  # don't skip public tests
                         logger.error(f"Failed to pass ai test. reached max number of calls")
                         continue
-
+                # ZZ: It is possible that the generated AI tests is incorrect. It might be unnecessary to update the code solution
+                # TODO: verify the test is valid before updating the code.
                 logger.error(f"Failed to pass ai tests. trying to fix code")
                 last_code_solution = copy.deepcopy(problem['code_recent_solution'])
 
