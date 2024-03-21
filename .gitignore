@@ -13,3 +13,6 @@ docs/.cache/
 
 # ignore all logs
 *.log
+
+# ignore code_contest_data
+code_contest_data/
