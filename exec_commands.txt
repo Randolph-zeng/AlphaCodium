@@ -8,8 +8,9 @@ chmod -R a+rw /home/llm/AlphaCodium
 sudo docker run -it --network="host" -v /home/llm/AlphaCodium:/home/appuser/AlphaCodium alphacodium_image
 
 ### Launch the local deepseek server
+CUDA_VISIBLE_DEVICES=4,5,6,7 
 python -u -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 10245 --model /dataset/pretrained-models/deepseek-coder-7b-instruct-v1.5/ --dtype half --gpu-memory-utilization 0.3  --max-model-len 4096 --tensor-parallel-size 1
-python -u -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 10245 --model /dataset/pretrained-models/deepseek-coder-33b-instruct/ --dtype half --gpu-memory-utilization 0.6  --max-model-len 16384 --tensor-parallel-size 4
+python -u -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 10245 --model /dataset/pretrained-models/deepseek-coder-33b-instruct/ --dtype half --gpu-memory-utilization 0.8  --max-model-len 16384 --tensor-parallel-size 4
 python -u -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 10245 --model /dataset/pretrained-models/deepseek-coder-33b-instruct/ --dtype half --gpu-memory-utilization 0.9  --max-model-len 16384 --tensor-parallel-size 1
 
 ### Update log level manually here if you want
@@ -18,6 +19,7 @@ python -u -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 10245 --mo
 ### Start testing 
 export OPENAI_API_KEY='placeholder'
 python -m alpha_codium.solve_problem --dataset_name /home/appuser/AlphaCodium/code_contest_data --split_name test --problem_number 0
+python -m alpha_codium.solve_dataset --dataset_name /home/appuser/AlphaCodium/code_contest_data --split_name test --database_solution_path /home/appuser/AlphaCodium/code_contest_data/generated_problem_data/dataset_output.json
 
 ### Monitor Progress
 tail -f example.log
