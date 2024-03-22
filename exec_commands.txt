@@ -1,3 +1,9 @@
+### Generating the ssh key
+ssh-keygen -t ed25519 -C "randolphzeng@gmail.com"
+
+### Update vllm
+python -m pip install vllm --upgrade
+
 ### Create an isolated env
 sudo docker build -t alphacodium_image .
 
