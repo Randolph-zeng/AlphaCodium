@@ -94,7 +94,7 @@ def solve_dataset(dataset_name='valid_and_test_processed',
                 f"\ntest_passed_public: {test_passed_public}, test_failed_public: {test_failed_public}, test_timeout_public: {test_timeout_public}\n"
                 f"test_passed_private: {test_passed_private}, test_failed_private: {test_failed_private}, test_timeout_private: {test_timeout_private}\n"
                 f"test_passed_generate: {test_passed_generate}, test_failed_generate: {test_failed_generate}, test_timeout_generate: {test_timeout_generate}\n")
-
+            problem_database[problem_number][it_str]['problem'] = problem
             problem_database[problem_number][it_str]['solution'] = solution
             problem_database[problem_number][it_str]['test_passed_private'] = test_passed_private
             problem_database[problem_number][it_str]['test_failed_private'] = test_failed_private
@@ -114,7 +114,7 @@ def solve_dataset(dataset_name='valid_and_test_processed',
         database[split_name][problem_number] = problem_database[problem_number]
         os.chdir(base_path)
         with open(database_solution_path, 'w') as f:
-            json.dump(database, f)
+            json.dump(database, f, ensure_ascii=False, indent=2)
 
 
 def is_solved(s):
