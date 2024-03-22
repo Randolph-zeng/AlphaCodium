@@ -98,15 +98,15 @@ class CodeContestsCompetitor:
                 # evaluate on ai tests
                 problem = await run_evaluate_all_ai_tests(self, problem)
 
-            return problem['code_recent_solution']
+            return problem
         except Exception as e:
             logging.error(f"Error: {e}")
             return ""
 
     def solve_problem_in_dataset(self, loop, example, iteration=0, logger_ext=None):
         problem = {k: example.get(k) for k in ["name", "description", 'public_tests']}
-        prediction = loop.run_until_complete(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
-        return prediction
+        revised_problem = loop.run_until_complete(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
+        return revised_problem['code_recent_solution'], revised_problem
 
 
 def solve_problem(dataset_name,
@@ -175,7 +175,7 @@ def solve_my_problem(problem):
     os.chdir(base_path)
     # ZZ:create an overall loop without calling async.run everytime
     loop = asyncio.get_event_loop()
-    solution = solver.solve_problem_in_dataset(loop, problem)
+    solution, revised_problem = solver.solve_problem_in_dataset(loop, problem)
     logger.info(f"testing solution on private tests with prediction:\n{solution}")
 
     logger.info(f"evaluating solution on public tests...")
@@ -201,7 +201,7 @@ def solve_my_problem(problem):
     logger.info(f"\ntest_passed_generate: {test_passed_generate}, test_passed_private: {test_passed_private}, test_passed_public: {test_passed_public}"
                 f"\ntest_failed_generate: {test_failed_generate}, test_failed_private: {test_failed_private}, test_failed_public: {test_failed_public}"
                 f"\ntest_timeout_generate: {test_timeout_generate}, test_timeout_private: {test_timeout_private}, test_timeout_public: {test_timeout_public}")
-    with open(f'/home/appuser/AlphaCodium/code_contest_data/generated_problem_data/{problem["name"]}.json', 'w') as file:
-        json.dump(problem, file, indent=2, ensure_ascii=False)
+    with open(f'/home/appuser/AlphaCodium/code_contest_data/generated_problem_data/{revised_problem["name"]}.json', 'w') as file:
+        json.dump(revised_problem, file, indent=2, ensure_ascii=False)
     
     return solution, test_results

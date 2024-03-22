@@ -77,7 +77,7 @@ def solve_dataset(dataset_name='valid_and_test_processed',
             if loop.is_closed():
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-            solution = solver.solve_problem_in_dataset(loop, problem, iteration, logger)
+            solution, revised_problem = solver.solve_problem_in_dataset(loop, problem, iteration, logger)
 
             logger.info(f"solution code:\n{solution}")
             if not solution:
@@ -99,7 +99,7 @@ def solve_dataset(dataset_name='valid_and_test_processed',
                 f"\ntest_passed_public: {test_passed_public}, test_failed_public: {test_failed_public}, test_timeout_public: {test_timeout_public}\n"
                 f"test_passed_private: {test_passed_private}, test_failed_private: {test_failed_private}, test_timeout_private: {test_timeout_private}\n"
                 f"test_passed_generate: {test_passed_generate}, test_failed_generate: {test_failed_generate}, test_timeout_generate: {test_timeout_generate}\n")
-            problem_database[problem_number][it_str]['problem'] = problem
+            problem_database[problem_number][it_str]['problem'] = revised_problem
             problem_database[problem_number][it_str]['solution'] = solution
             problem_database[problem_number][it_str]['test_passed_private'] = test_passed_private
             problem_database[problem_number][it_str]['test_failed_private'] = test_failed_private
