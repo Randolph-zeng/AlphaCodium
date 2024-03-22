@@ -52,11 +52,15 @@ class CodeContestsCompetitor:
 
         if frequency_penalty == None:
             frequency_penalty = get_settings().get("config.frequency_penalty")
-
-        response, finish_reason = await self.ai_handler.chat_completion(
-            model=model, system=system_prompt, user=user_prompt, top_p=top_p,
-            temperature=temperature, frequency_penalty=frequency_penalty,
-        )
+        try:
+            response, finish_reason = await self.ai_handler.chat_completion(
+                model=model, system=system_prompt, user=user_prompt, top_p=top_p,
+                temperature=temperature, frequency_penalty=frequency_penalty,
+            )
+        except Exception as e:
+            logging.error("Unknown error during calling of ai handler: ", e)
+            raise e
+        
         return response, finish_reason
 
     async def run(self, problem, iteration=0, logger_ext=None):
@@ -99,9 +103,9 @@ class CodeContestsCompetitor:
             logging.error(f"Error: {e}")
             return ""
 
-    def solve_problem_in_dataset(self, example, iteration=0, logger_ext=None):
+    def solve_problem_in_dataset(self, loop, example, iteration=0, logger_ext=None):
         problem = {k: example.get(k) for k in ["name", "description", 'public_tests']}
-        prediction = asyncio.run(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
+        prediction = loop.run_until_complete(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
         return prediction
 
 
@@ -169,7 +173,9 @@ def solve_my_problem(problem):
 
     solver = CodeContestsCompetitor()
     os.chdir(base_path)
-    solution = solver.solve_problem_in_dataset(problem)
+    # ZZ:create an overall loop without calling async.run everytime
+    loop = asyncio.get_event_loop()
+    solution = solver.solve_problem_in_dataset(loop, problem)
     logger.info(f"testing solution on private tests with prediction:\n{solution}")
 
     logger.info(f"evaluating solution on public tests...")
@@ -195,7 +201,7 @@ def solve_my_problem(problem):
     logger.info(f"\ntest_passed_generate: {test_passed_generate}, test_passed_private: {test_passed_private}, test_passed_public: {test_passed_public}"
                 f"\ntest_failed_generate: {test_failed_generate}, test_failed_private: {test_failed_private}, test_failed_public: {test_failed_public}"
                 f"\ntest_timeout_generate: {test_timeout_generate}, test_timeout_private: {test_timeout_private}, test_timeout_public: {test_timeout_public}")
-    with open(f'/home/llm/AlphaCodium/code_contest_data/generated_problem_data/{problem["name"]}.json', 'w') as file:
+    with open(f'/home/appuser/AlphaCodium/code_contest_data/generated_problem_data/{problem["name"]}.json', 'w') as file:
         json.dump(problem, file, indent=2, ensure_ascii=False)
     
     return solution, test_results

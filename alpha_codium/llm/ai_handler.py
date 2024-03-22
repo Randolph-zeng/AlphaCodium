@@ -89,6 +89,7 @@ class AiHandler:
                 logger.debug(f"system:\n{system}")
                 logger.debug(f"user:\n{user}")
                 if "deepseek" in get_settings().get("config.model"):
+                    # ZZ: this will result in some unclosed socket issue
                     response = await acompletion(
                         model=get_settings().get("config.model"),
                         messages=[

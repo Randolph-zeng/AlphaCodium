@@ -1,6 +1,6 @@
 import json
 import os
-import shutil
+import asyncio
 from collections import OrderedDict
 
 from alpha_codium.code_contests.data.provider import CodeContestDataProvider
@@ -30,6 +30,8 @@ def solve_dataset(dataset_name='valid_and_test_processed',
         print(f"Failed to load database from {database_solution_path}")
         database = {split_name: {}}
 
+    # ZZ:create an overall loop without calling async.run everytime
+    loop = asyncio.get_event_loop()
     # iterate on problems
     for problem_number in range(0, num_problems):
 
@@ -72,7 +74,10 @@ def solve_dataset(dataset_name='valid_and_test_processed',
                 continue
 
             # solve problem
-            solution = solver.solve_problem_in_dataset(problem, iteration, logger)
+            if loop.is_closed():
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            solution = solver.solve_problem_in_dataset(loop, problem, iteration, logger)
 
             logger.info(f"solution code:\n{solution}")
             if not solution:
