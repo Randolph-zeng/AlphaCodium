@@ -14,7 +14,7 @@ sol_eval_timeout = 30
 
 [dataset]
 evaluate_prev_solutions=false
-num_iterations=1 # X iterations to try to solve the problem
+num_iterations=3 # X iterations to try to solve the problem
 use_iteration_scheme=true
 
 [solve]
@@ -26,7 +26,7 @@ use_direct_solutions= false
 validate_self_reflection=false
 
 [possible_solutions]
-max_num_of_possible_solutions=1
+max_num_of_possible_solutions=5
 use_test_explanations=true
 remove_bruce_force_solutions=true
 
