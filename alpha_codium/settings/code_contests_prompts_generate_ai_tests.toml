@@ -1,5 +1,5 @@
 [code_contests_prompts_generate_ai_tests]
-temperature = 0.2
+temperature = 0.5
 system = """\
 """
 

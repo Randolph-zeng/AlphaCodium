@@ -90,7 +90,7 @@ class CodeContestsCompetitor:
                 problem = await run_generate_ai_tests(self, problem)
 
                 # initial code generation
-                problem = await run_initial_code_generation(self, problem)
+                problem = await run_initial_solve(self, problem)
 
                 # evaluate on public tests
                 problem = await run_evaluate_public_tests(self, problem)
