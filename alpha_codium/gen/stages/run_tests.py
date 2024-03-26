@@ -8,12 +8,10 @@ from alpha_codium.log import get_logger
 logger = get_logger(__name__)
 
 
-def run_tests(self, problem, counter, test_inputs, test_outputs, timeout=3):
+def run_tests(self, test_id, test_solution, test_inputs, test_outputs, timeout=3):
     try:
-        # run the solution on the public tests
-        logging.info(f"evaluating public tests. attempt {counter}")
-        test_inputs, results = eval_solution(example=problem,
-                                             prediction=problem['code_recent_solution'],
+        test_inputs, results = eval_solution(test_id=test_id,
+                                             test_solution=test_solution,
                                              test_inputs=test_inputs,
                                              test_outputs=test_outputs,
                                              timeout=timeout)
@@ -74,7 +72,7 @@ def run_tests(self, problem, counter, test_inputs, test_outputs, timeout=3):
         # calculate the distance between the expected and actual output
         d_tot = calc_distance_between_results(non_empty_output, tests_timeout, test_outputs, results)
 
-        return problem, all_passed, non_empty_output, error_str, trace_str, tests_timeout, d_tot
+        return all_passed, non_empty_output, error_str, trace_str, tests_timeout, d_tot
     except Exception as e:
         logging.error(f"Error: {e}")
         exit(-1)

@@ -310,30 +310,19 @@ class CodeContestsGeneralPythonTestsRunner(PythonTestsRunner):
         return ThreadPoolExecutor, {}
 
 
-def eval_solution(evaluation_test_type: str = "private_tests",
-                  example: dict = {},  # noqa # the code contest problem
-                  prediction: str = '',  # python code to be evaluated
+def eval_solution(test_id: str = '',
+                  test_solution: str = '',  # python code to be evaluated
                   test_inputs: Optional[List[str]] = None,
                   test_outputs: Optional[List[str]] = None,
                   silent=False,
                   break_on_timeout=False,
                   timeout=3):
-    if not test_inputs:
-        test_inputs = example.get(evaluation_test_type).get("input") if example.get(evaluation_test_type) else None
-    if not test_outputs:
-        test_outputs = example.get(evaluation_test_type).get("output") if example.get(evaluation_test_type) else None
-
-    is_valid_test_list = example.get(evaluation_test_type).get("is_valid_test") if example.get(
-        evaluation_test_type) else None
-    if is_valid_test_list:
-        test_inputs = [test_inputs[i] for i, is_valid in enumerate(is_valid_test_list) if is_valid]
-        test_outputs = [test_outputs[i] for i, is_valid in enumerate(is_valid_test_list) if is_valid]
     if test_inputs and test_outputs:
         test_runner = PythonTestsRunner.factory(get_settings().code_tester.tester_type)
         _, _, results = test_runner.run_tests(
-            test_id=example["name"],
+            test_id=test_id,
             candidate_id="id",
-            candidate=prediction,
+            candidate=test_solution,
             test_inputs=test_inputs,
             tests_outputs=test_outputs,
             timeout=timeout,
@@ -343,7 +332,6 @@ def eval_solution(evaluation_test_type: str = "private_tests",
             test_runner.print_test_results(results, test_inputs)
         return test_inputs, results
     else:
-        # logger.error(f"example '{example['name']}', type: '{evaluation_test_type}' doesn't have tests")
         return test_inputs, []
 
 

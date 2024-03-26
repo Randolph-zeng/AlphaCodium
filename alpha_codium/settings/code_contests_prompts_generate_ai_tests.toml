@@ -21,17 +21,16 @@ self-reflection on the problem:
 {%- if use_test_explanations_possible_solutions %}
 
 
-Here are also explanations for the problem test cases:
+Here is the ground truth solution for the problem:
 ============
-{{ tests_explanations_str|trim }}
+{{ sampled_ground_truth_solution|trim }}
 ============
 {%- endif %}
 
 
-Your task is to generate additional {{ number_of_ai_tests }} diverse input-output examples for the code contest problem.
-Try to cover cases that are not covered by the original tests. Also include a test for large inputs.
-The generated tests should be sorted by difficulty, from easiest to hardest.
-All the inputs should be valid, and the outputs are correct. Double check them, and validate they match the problem description and rules.
+Your task is to generate {{ number_of_ai_tests }} diverse input-output examples for the code contest problem.
+Please first describe in general what you plan to generate and what aspects do these tests going to cover. Then proceed to the generation of the tests.
+Please make sure all the inputs are valid and match the problem description and rules.
 
 The output must be a valid YAML object equivalent to type $ProblemTests, according to the following Pydantic definitions:
 ======
@@ -41,12 +40,15 @@ class Test(BaseModel):
     explanation: str = Field(description='Short explanation how we got the output from the input. Be specific')
 
 class ProblemTests(BaseModel):
+    test_coverages: str = Field(description='Describe the directions and aspects of the unit tests you are going to create. Be specific and concise.')
     tests: List[Test] = Field(min_items={{number_of_ai_tests}}, max_items={{number_of_ai_tests}})
 ======
 
 
 Example YAML output:
 ```yaml
+test_coverages: |
+  ...
 tests:
 - input: |
     ...

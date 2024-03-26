@@ -5,7 +5,7 @@ logger = get_logger(__name__)
 
 def set_configurations(problem, iteration=0):
     # configurations
-    problem = {k: problem.get(k) for k in ["name", "description", "public_tests"]}
+    problem = {k: problem.get(k) for k in ["name", "description", "public_tests", "ground_truth_python_solutions"]}
     problem['iteration'] = iteration
 
     # initialize passed tests field

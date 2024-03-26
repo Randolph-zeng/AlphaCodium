@@ -28,7 +28,7 @@ async def run_evaluate_all_ai_tests(self, problem):
 
             # run the solution on the tests
             problem, test_passed, non_empty_output, error_str, trace_str, tests_timeout, d_tot \
-                = run_tests(self, problem, counter, test_inputs, test_outputs)
+                = run_tests(self, problem, test_inputs, test_outputs)
 
             # we passed without changing the code. Add the test to the passed tests list
             if test_passed:

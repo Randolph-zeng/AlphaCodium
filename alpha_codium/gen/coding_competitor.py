@@ -105,6 +105,12 @@ class CodeContestsCompetitor:
 
     def solve_problem_in_dataset(self, loop, example, iteration=0, logger_ext=None):
         problem = {k: example.get(k) for k in ["name", "description", 'public_tests']}
+        # filter out ground truth python solutions to be used in AI tests generation  
+        filtered_sols = []
+        for lang, sol in zip(example['solutions']['language'], example['solutions']['solution']):
+            if (lang.lower() == 'python3'):
+                filtered_sols.append(sol)
+        problem['ground_truth_python_solutions'] = filtered_sols 
         revised_problem = loop.run_until_complete(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
         return revised_problem['code_recent_solution'], revised_problem
 
