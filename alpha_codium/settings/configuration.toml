@@ -33,7 +33,7 @@ remove_bruce_force_solutions=true
 [generate_ai_tests]
 validate_ai_tests=true
 number_of_ai_tests=6
-use_test_explanations=true
+use_ground_truth_solution=true
 add_public_tests_to_ai_tests=true
 
 [initial_code_generation]

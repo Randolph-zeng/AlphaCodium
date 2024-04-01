@@ -6,8 +6,7 @@ from jinja2 import Environment, StrictUndefined
 from alpha_codium.code_contests.data.provider import CodeContestDataProvider
 from alpha_codium.gen.stages.run_baseline import run_baseline
 from alpha_codium.gen.stages.run_choose_best_solution import run_choose_best_solution
-from alpha_codium.gen.stages.run_evaluate_all_ai_tests import run_evaluate_all_ai_tests
-from alpha_codium.gen.stages.run_evaluate_public_tests import run_evaluate_public_tests
+from alpha_codium.gen.stages.run_evaluate_all_tests import run_evaluate_all_tests
 from alpha_codium.gen.stages.run_generate_ai_test import run_generate_ai_tests
 from alpha_codium.gen.stages.run_generate_possible_solutions import run_generate_possible_solutions
 from alpha_codium.gen.stages.run_self_reflect import run_self_reflect
@@ -92,11 +91,8 @@ class CodeContestsCompetitor:
                 # initial code generation
                 problem = await run_initial_solve(self, problem)
 
-                # evaluate on public tests
-                problem = await run_evaluate_public_tests(self, problem)
-
-                # evaluate on ai tests
-                problem = await run_evaluate_all_ai_tests(self, problem)
+                # evaluate on all tests available
+                problem = await run_evaluate_all_tests(self, problem)
 
             return problem
         except Exception as e:

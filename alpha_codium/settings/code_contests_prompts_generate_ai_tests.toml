@@ -18,9 +18,8 @@ self-reflection on the problem:
 {{ self_reflection|trim }}
 ======
 
-{%- if use_test_explanations_possible_solutions %}
 
-
+{%- if use_ground_truth_solution %}
 Here is the ground truth solution for the problem:
 ============
 {{ sampled_ground_truth_solution|trim }}
@@ -35,12 +34,12 @@ Please make sure all the inputs are valid and match the problem description and 
 The output must be a valid YAML object equivalent to type $ProblemTests, according to the following Pydantic definitions:
 ======
 class Test(BaseModel):
+    explanation: str = Field(description='Short explanation how we got the output from the input. Be specific')
     input: str
     output: str
-    explanation: str = Field(description='Short explanation how we got the output from the input. Be specific')
 
 class ProblemTests(BaseModel):
-    test_coverages: str = Field(description='Describe the directions and aspects of the unit tests you are going to create. Be specific and concise.')
+    test_coverages: str = Field(description='Describe the general directions and aspects of the unit tests you are going to create. Be specific and concise.')
     tests: List[Test] = Field(min_items={{number_of_ai_tests}}, max_items={{number_of_ai_tests}})
 ======
 
@@ -50,11 +49,11 @@ Example YAML output:
 test_coverages: |
   ...
 tests:
-- input: |
+- explanation: |
+    ...
+  input: |
     ...
   output: |
-    ...
-  explanation: |
     ...
 ...
 ```
