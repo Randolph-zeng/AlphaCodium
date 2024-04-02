@@ -11,6 +11,7 @@ from alpha_codium.gen.stages.run_generate_ai_test import run_generate_ai_tests
 from alpha_codium.gen.stages.run_generate_possible_solutions import run_generate_possible_solutions
 from alpha_codium.gen.stages.run_self_reflect import run_self_reflect
 from alpha_codium.gen.stages.run_initial_code_generation import run_initial_code_generation
+from alpha_codium.gen.stages.run_initial_solve import run_initial_solve
 from alpha_codium.gen.stages.utils import set_configurations
 from alpha_codium.gen.utils import evaluate_solution_on_subset
 from alpha_codium.llm.ai_handler import AiHandler
@@ -71,7 +72,7 @@ class CodeContestsCompetitor:
 
         try:
             if get_settings().get("solve.use_baseline", False):
-                problem['code_recent_solution'] = await run_baseline(self, problem)
+                problem['code_final_solution'] = await run_baseline(self, problem)
             else:
                 # configurations
                 problem = set_configurations(problem, iteration)
@@ -108,7 +109,7 @@ class CodeContestsCompetitor:
                 filtered_sols.append(sol)
         problem['ground_truth_python_solutions'] = filtered_sols 
         revised_problem = loop.run_until_complete(self.run(problem=problem, iteration=iteration, logger_ext=logger_ext))
-        return revised_problem['code_recent_solution'], revised_problem
+        return revised_problem['code_final_solution'], revised_problem
 
 
 def solve_problem(dataset_name,
@@ -207,3 +208,29 @@ def solve_my_problem(problem):
         json.dump(revised_problem, file, indent=2, ensure_ascii=False)
     
     return solution, test_results
+
+
+def solve_problem_clean(dataset_name,
+                  split_name="valid",
+                  problem_name="",
+                  problem_number=0):
+    # load dataset
+    logger = get_logger(__name__)
+    data_provider = CodeContestDataProvider(dataset_location=dataset_name)
+    if problem_number and problem_name:
+        logger.info(f"problem_number and problem_name are both specified, using problem_name")
+    if not problem_name and problem_number:
+        problem_name = data_provider.dataset[split_name][int(problem_number)]['name']
+        logger.info(f"problem_name: {problem_name}")
+
+    # find problem
+    problem = data_provider.find_problem(ds=data_provider.dataset, problem_name=problem_name, split_name=split_name)
+    logger.info(f"problem['name']: {problem['name']}")
+    solver = CodeContestsCompetitor()
+    # ZZ:create an overall loop without calling async.run everytime
+    loop = asyncio.get_event_loop()
+    solution, revised_problem = solver.solve_problem_in_dataset(loop, problem)
+    with open(f'/home/appuser/AlphaCodium/code_contest_data/generated_problem_data/{revised_problem["name"]}.json', 'w') as file:
+        json.dump(revised_problem, file, indent=2, ensure_ascii=False)
+    
+    return solution
