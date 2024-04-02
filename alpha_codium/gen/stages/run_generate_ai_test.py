@@ -29,21 +29,21 @@ async def run_generate_ai_tests(self, problem):
 
             # inference
             response_problem_tests, _ = await send_inference(f)
-            problem['problem_ai_tests'] = load_yaml(response_problem_tests,
+            problem['generated_tests'] = load_yaml(response_problem_tests,
                                                     keys_fix_yaml=["input:", "output:", "explanation:"])['tests']
 
             if validate_ai_tests:            
                 logging.info(f"evaluating AI generated tests.")
                 # ZZ: iterate through all the ai generated tests and make sure gt solution passed the test
                 filtered_ai_tests = []
-                for ai_test in problem['problem_ai_tests']:
-                    test_passed, non_empty_output, error_str, trace_str, tests_timeout, d_tot \
-                        = run_tests(self, problem['name'], problem['sampled_ground_truth_solution'], [ai_test['input']], [ai_test['output']])
+                for ai_test in problem['generated_tests']:
+                    test_passed, sol_output, error_str, trace_str, tests_timeout \
+                        = run_tests(problem['name'], problem['sampled_ground_truth_solution'], [ai_test['input']], [ai_test['output']])
                     if test_passed:
                         filtered_ai_tests.append(ai_test)
                 if len(filtered_ai_tests) == 0:
                     raise Exception("None of the generated AI test passed the ground truth solution")
-                problem['problem_ai_tests'] = filtered_ai_tests
+                problem['generated_tests'] = filtered_ai_tests
             return problem
         except Exception as e:
             logging.error(f"'generate ai tests' stage, counter_retry {counter_retry}, Error: {e}")
