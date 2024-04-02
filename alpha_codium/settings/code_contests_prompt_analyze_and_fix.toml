@@ -4,9 +4,9 @@ system = """\
 - You must divide the fixed code into small sub-functions, with meaningful names and functionality. Each function should be no longer than 10 lines of code.
 - The fixed code should be robust and general, and work for other input examples as well.
 - The fixed should be different from the original code, and not just a copy-paste of the original code.
+- Make sure you provide enough comments on the code to explain your logic.
 """
 user="""\
-{%- if use_self_reflection_public %}
 You are given a code contest problem, and a self-reflection on the problem:
 
 problem description:
@@ -20,25 +20,16 @@ self-reflection on the problem:
 {{ self_reflection|trim }}
 ======
 
-{%- else %}
-
-You are given a code contest problem:
-=============
-{{ description_short|trim }}
-=============
-
-{%- endif %}
-
-
 A Python code solution was generated for the problem:
 =============
 {{ code_recent_solution|trim }}
 =============
 
 
-However, when running the input-output example test, the code solution failed to produce the expected output, and gave the following error message:
+However, when running the input-output example test, the code solution failed to produce the expected output. 
+Followings are the unit tests and corresponding errors from compilers. 
 =============
-{{ error_str|trim }}
+{{ unit_tests_and_errors|trim }}
 =============
 
 
