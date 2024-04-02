@@ -24,8 +24,8 @@ async def run_initial_solve(self, problem):
                 response_solve = response_solve[6:]
 
             # save the response
-            problem['code_recent_solution'] = response_solve
-            problem['code_prev_solution'] = response_solve
+            problem['code_solution_iter_0'] = response_solve
+            problem['code_final_solution'] = response_solve
             return problem
         except Exception as e:
             logging.error(f"'initial solve' stage, counter_retry {counter_retry}, Error: {e}")

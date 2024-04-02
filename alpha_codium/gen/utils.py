@@ -49,8 +49,12 @@ def evaluate_solution_on_subset(evaluation_test_type, problem, solution, silent=
     # evaluate solution
     test_results = None
     if evaluation_test_type:
-        test_results = eval_solution(evaluation_test_type=evaluation_test_type, example=problem, prediction=solution,
-                                     silent=silent, break_on_timeout=break_on_timeout, timeout=timeout)
+        test_results = eval_solution(
+            test_id=problem['name'], 
+            test_solution=solution,
+            test_inputs=problem[evaluation_test_type]['input'],
+            test_outputs=problem[evaluation_test_type]['output'],
+            timeout=timeout)
 
     if test_results[1] == []:
         if not silent:

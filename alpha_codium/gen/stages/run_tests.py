@@ -8,7 +8,7 @@ from alpha_codium.log import get_logger
 logger = get_logger(__name__)
 
 
-def run_tests(self, test_id, test_solution, test_inputs, test_outputs, timeout=3):
+def run_tests(test_id, test_solution, test_inputs, test_outputs, timeout=3):
     try:
         test_inputs, results = eval_solution(test_id=test_id,
                                              test_solution=test_solution,
@@ -17,7 +17,7 @@ def run_tests(self, test_id, test_solution, test_inputs, test_outputs, timeout=3
                                              timeout=timeout)
 
         # analyze the tests results
-        error_str = trace_str = ""
+        sol_output = error_str = trace_str = ""
         all_passed = True
         non_empty_output = True
         tests_timeout = False
@@ -36,6 +36,7 @@ def run_tests(self, test_id, test_solution, test_inputs, test_outputs, timeout=3
             error_str = results.test_results[0].sandbox_result
             trace_str = f"trace information:\n{render_trace(results.test_results[0].trace)}\n\n"
             all_passed = False
+            sol_output += results.test_results[0].actual_output
         else: # ProgramStatus.passed
             # initially assume all tests passed
             all_passed = True
@@ -70,9 +71,9 @@ def run_tests(self, test_id, test_solution, test_inputs, test_outputs, timeout=3
                 non_empty_output = non_empty_output and t.actual_output
 
         # calculate the distance between the expected and actual output
-        d_tot = calc_distance_between_results(non_empty_output, tests_timeout, test_outputs, results)
+        # d_tot = calc_distance_between_results(non_empty_output, tests_timeout, test_outputs, results)
 
-        return all_passed, non_empty_output, error_str, trace_str, tests_timeout, d_tot
+        return all_passed, sol_output, error_str, trace_str, tests_timeout
     except Exception as e:
         logging.error(f"Error: {e}")
         exit(-1)
