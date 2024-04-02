@@ -10,48 +10,47 @@ from alpha_codium.settings.config_loader import get_settings
 logger = get_logger(__name__)
 
 
-async def run_analyze_and_fix_test_failure(self, problem, error_str):
+async def run_analyze_and_fix_test_failure(self, problem, iter_num):
     counter_retry = 0
     while True:
         try:
-            problem['error_str'] = error_str
+            # format the unit tests and the error strings
+            curr_iter_info = problem[f'iteration_info_{iter_num}']
+            problem['code_recent_solution'] = curr_iter_info['solution']
+            unit_tests_and_errors = '' 
+            for failure_dict in curr_iter_info['failed_tests']:
+                unit_tests_and_errors += f"Unit-Test Input: {failure_dict['inputs']}\n"
+                unit_tests_and_errors += f"Unit-Test Expected Output: {failure_dict['expected_outputs']}\n"
+                # unit_tests_and_errors += f"Solution Output: {failure_dict['solution_outputs']}\n"
+                unit_tests_and_errors += f"Error Message: {failure_dict['error_str']}\n"
+                unit_tests_and_errors += f"Trace Message: {failure_dict['trace_str']}\n\n"
+            problem['unit_tests_and_errors'] = unit_tests_and_errors
             f = functools.partial(self._run, problem=problem, prompt=choose_prompt())
             response_analyze_failure, _ = await send_inference(f)
-            problem['error_str'] = ''
 
             response_analyze_failure = response_analyze_failure.rstrip("'` \n") # remove trailing spaces and newlines from yaml response
             if response_analyze_failure.startswith("```yaml"):
                 response_analyze_failure = response_analyze_failure[8:]
             response_analyze_failure_yaml = yaml.safe_load(response_analyze_failure)
             problem['response_analyze_failure'] = response_analyze_failure
-            code_recent_solution = response_analyze_failure_yaml['fixed_code'].rstrip("'` \n")
+            code_solution = response_analyze_failure_yaml['fixed_code'].rstrip("'` \n")
 
             # some cleaning
-            if code_recent_solution .startswith("```python"):
-                code_recent_solution= code_recent_solution[10:]
-            elif code_recent_solution.startswith("python"):
-                code_recent_solution = code_recent_solution[6:]
+            if code_solution.startswith("```python"):
+                code_solution = code_solution[10:]
+            elif code_solution.startswith("python"):
+                code_solution = code_solution[6:]
             try:
-                ast.parse(code_recent_solution)
+                ast.parse(code_solution)
             except:
-                code_recent_solution_fallback = '\n'.join(code_recent_solution.splitlines()[:-1]).rstrip("'` \n")
+                code_solution_fallback = '\n'.join(code_solution.splitlines()[:-1]).rstrip("'` \n")
                 try:
-                    ast.parse(code_recent_solution_fallback)
-                    code_recent_solution = code_recent_solution_fallback
+                    ast.parse(code_solution_fallback)
+                    code_solution = code_solution_fallback
                 except:
-                    logger.error(f"Invalid code:\n{code_recent_solution}")
+                    logger.error(f"Invalid code:\n{code_solution}")
                     return problem
-            problem['code_recent_solution'] = code_recent_solution
-
-            # diff patch
-            diff = difflib.unified_diff(problem['code_prev_solution'].splitlines(keepends=True),
-                                        problem['code_recent_solution'].splitlines(keepends=True))
-            # patch = ''.join(diff)
-            # if get_settings().solve.reduce_verbose:
-            #     logger.debug(f"diff:\n{patch}")
-            # else:
-            #     logger.info(f"diff:\n{patch}")
-
+            problem[f'code_solution_iter_{iter_num+1}'] = code_solution
             return problem
         except Exception as e:
             logging.error(f"'analyze_and_fix_test_failure' stage, counter_retry {counter_retry}, Error: {e}")
@@ -60,7 +59,4 @@ async def run_analyze_and_fix_test_failure(self, problem, error_str):
                 raise e
 
 def choose_prompt():
-    if get_settings().get("solve.use_direct_solutions", False):
-        return "code_contests_prompt_analyze_and_fix_direct"
-    else:
-        return "code_contests_prompt_analyze_and_fix"
+    return "code_contests_prompt_analyze_and_fix"
